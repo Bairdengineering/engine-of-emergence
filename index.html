@@ -221,6 +221,16 @@ function drawEye(cx, cy) {
   ctx.fill();
 
   ctx.restore();
+
+  // Upper lid — dark crescent drawn AFTER restore, on top of eye
+  const lidDepth = ry * 0.35; // how far down the lid covers at rest
+  ctx.beginPath();
+  ctx.ellipse(cx, cy, rx, ry, 0, Math.PI, Math.PI*2); // top half arc
+  ctx.lineTo(cx + rx, cy - lidDepth);
+  ctx.ellipse(cx, cy - lidDepth, rx, ry * 0.4, 0, 0, Math.PI, true); // inner lid curve
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(5,12,10,0.88)';
+  ctx.fill();
 }
 
 draw();
