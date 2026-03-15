@@ -183,15 +183,9 @@ function draw(){
 
 
 function drawEye(cx, cy) {
-  const rx = 52, ry = 32;
-  // Just the white almond — nothing else
+  // Simple ellipse — no bezier curves
   ctx.beginPath();
-  ctx.moveTo(cx-rx, cy);
-  ctx.bezierCurveTo(cx-rx,cy-ry*1.1,cx-rx*.3,cy-ry,cx,cy-ry*.85);
-  ctx.bezierCurveTo(cx+rx*.3,cy-ry,cx+rx,cy-ry*1.1,cx+rx,cy);
-  ctx.bezierCurveTo(cx+rx,cy+ry*1.1,cx+rx*.3,cy+ry,cx,cy+ry*.85);
-  ctx.bezierCurveTo(cx-rx*.3,cy+ry,cx-rx,cy+ry*1.1,cx-rx,cy);
-  ctx.closePath();
+  ctx.ellipse(cx, cy, 52, 28, 0, 0, Math.PI*2);
   ctx.fillStyle = 'white';
   ctx.fill();
 }
