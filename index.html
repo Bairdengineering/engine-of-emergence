@@ -230,18 +230,18 @@ function drawEye(cx, cy) {
   hg.addColorStop(0.65, 'rgba(90, 140, 60, 1.0)');
   hg.addColorStop(1.0,  'rgba(185, 135, 50, 1.0)');
 
-  // Upper lid — outer edge is top of ellipse, inner edge is smaller ellipse offset down
+  // Upper lid — full ellipse width, inner edge lower (thinner lid)
   ctx.beginPath();
-  ctx.ellipse(cx, cy, rx, ry, 0, Math.PI, 0, true);         // top half outer
-  ctx.ellipse(cx, cy-ry*0.38, rx*0.88, ry*0.62, 0, 0, Math.PI, false); // inner edge
+  ctx.ellipse(cx, cy, rx, ry, 0, Math.PI, 0, true);         // top half outer, full width
+  ctx.ellipse(cx, cy-ry*0.22, rx, ry*0.78, 0, 0, Math.PI, false); // inner edge, same width
   ctx.closePath();
   ctx.fillStyle = hg;
   ctx.fill();
 
-  // Lower lid — outer edge is bottom of ellipse, inner edge is smaller ellipse offset up
+  // Lower lid — full ellipse width, inner edge higher (thinner lid)
   ctx.beginPath();
-  ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI, false);        // bottom half outer
-  ctx.ellipse(cx, cy+ry*0.28, rx*0.88, ry*0.52, 0, Math.PI, 0, true); // inner edge
+  ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI, false);        // bottom half outer, full width
+  ctx.ellipse(cx, cy+ry*0.18, rx, ry*0.68, 0, Math.PI, 0, true); // inner edge, same width
   ctx.closePath();
   ctx.fillStyle = hg;
   ctx.fill();
