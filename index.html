@@ -296,12 +296,14 @@ function drawEye(cx, cy) {
 function drawMouth(cx, cy) {
   const w = 95, h = 16;
 
-  // Skin tone fill — lower face region, semi-transparent
+  // Subtle blue-green gradient behind mouth
+  const mg = ctx.createRadialGradient(cx, cy + h*0.3, 0, cx, cy + h*0.3, w*0.75);
+  mg.addColorStop(0,   'rgba(30, 80, 120, 0.28)');
+  mg.addColorStop(0.5, 'rgba(40, 110, 70, 0.18)');
+  mg.addColorStop(1,   'rgba(20, 60, 50, 0.0)');
   ctx.beginPath();
   ctx.ellipse(cx, cy + h*0.3, w*0.75, h*1.6, 0, 0, Math.PI*2);
-  ctx.fillStyle = 'rgba(160, 110, 75, 0.18)';
-  ctx.fill();
-  ctx.fillStyle = 'rgba(160, 110, 75, 0.12)';
+  ctx.fillStyle = mg;
   ctx.fill();
 
   // Soft glow behind mouth — slight blur effect via layered fills
