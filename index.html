@@ -283,39 +283,31 @@ function drawCollage() {
   ];
 
   regions.forEach(r => {
-    for(let i=0;i<6;i++){
+    for(let i=0;i<22;i++){
       const sx = r.x + Math.random()*r.w;
       const sy = r.y + Math.random()*r.h;
-      const sz = 18 + Math.random()*55;
-      const alpha = 0.04 + Math.random()*0.07;
+      const sz = 22 + Math.random()*90;
+      const alpha = 0.12 + Math.random()*0.32;
       const sym = r.symbols[Math.floor(Math.random()*r.symbols.length)];
       c.save();
       c.translate(sx,sy);
-      c.rotate((Math.random()-.5)*0.6);
+      c.rotate((Math.random()-.5)*1.2);
       c.globalAlpha = alpha;
       c.strokeStyle = r.color + '1)';
       c.fillStyle = r.color + '1)';
-      c.lineWidth = 1.5;
+      c.lineWidth = 2;
       c.lineCap = 'round';
       drawCollageSym(c, sym, sz);
       c.restore();
     }
   });
 
-  // Soft vignette over everything
-  const vig = c.createRadialGradient(W/2,H/2,H*.2,W/2,H/2,H*.85);
-  vig.addColorStop(0,'rgba(2,4,8,0)');
-  vig.addColorStop(1,'rgba(2,4,8,0.75)');
+  // Soft vignette — lighter so more shows through
+  const vig = c.createRadialGradient(W/2,H/2,H*.1,W/2,H/2,H*.75);
+  vig.addColorStop(0,'rgba(2,4,8,0.25)');
+  vig.addColorStop(1,'rgba(2,4,8,0.82)');
   c.globalAlpha=1;
   c.fillStyle=vig; c.fillRect(0,0,W,H);
-
-  // Subtle dividing lines between domain regions
-  c.globalAlpha=0.06; c.strokeStyle='rgba(255,255,255,1)'; c.lineWidth=1;
-  c.setLineDash([4,8]);
-  c.beginPath(); c.moveTo(W*.33,0); c.lineTo(W*.33,H); c.stroke();
-  c.beginPath(); c.moveTo(W*.66,0); c.lineTo(W*.66,H); c.stroke();
-  c.beginPath(); c.moveTo(0,H*.5); c.lineTo(W,H*.5); c.stroke();
-  c.setLineDash([]);
 }
 
 function drawCollageSym(c, sym, s) {
