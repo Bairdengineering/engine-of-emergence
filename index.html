@@ -231,6 +231,16 @@ function drawEye(cx, cy) {
   ctx.closePath();
   ctx.fillStyle = 'rgba(5,12,10,0.88)';
   ctx.fill();
+
+  // Lower lid — smaller crescent from bottom
+  const llidDepth = ry * 0.22;
+  ctx.beginPath();
+  ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI); // bottom half arc
+  ctx.lineTo(cx - rx, cy + llidDepth);
+  ctx.ellipse(cx, cy + llidDepth, rx, ry * 0.35, 0, Math.PI, 0, true);
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(5,12,10,0.72)';
+  ctx.fill();
 }
 
 draw();
