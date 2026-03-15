@@ -337,7 +337,7 @@ function drawMouth(cx, cy) {
   ctx.fill();
 
   // Dark gap — opens wider with sigh
-  const gapOpen = h * (0.7 + 5.0 * sigh);
+  const gapOpen = h * (0.7 + 2.5 * sigh);
   ctx.beginPath();
   ctx.moveTo(cx - w*0.68, cy);
   ctx.quadraticCurveTo(cx, cy + gapOpen, cx + w*0.68, cy);
@@ -359,7 +359,7 @@ function drawMouth(cx, cy) {
   // Lower lip
   ctx.beginPath();
   ctx.moveTo(cx - w*0.68, cy);
-  ctx.quadraticCurveTo(cx, cy + h*(1.6 + 5.0*sigh), cx + w*0.68, cy);
+  ctx.quadraticCurveTo(cx, cy + h*(1.6 + 2.5*sigh), cx + w*0.68, cy);
   ctx.strokeStyle = 'rgba(20,45,25,0.55)';
   ctx.lineWidth = 3.5;
   ctx.stroke();
