@@ -263,6 +263,7 @@ function almond(cx,cy,rx,ry){
   ctx.bezierCurveTo(cx+rx*.3,cy-ry,cx+rx,cy-ry*1.1,cx+rx,cy);
   ctx.bezierCurveTo(cx+rx,cy+ry*1.1,cx+rx*.3,cy+ry,cx,cy+ry*.85);
   ctx.bezierCurveTo(cx-rx*.3,cy+ry,cx-rx,cy+ry*1.1,cx-rx,cy);
+  ctx.closePath();
 }
 
 draw();
