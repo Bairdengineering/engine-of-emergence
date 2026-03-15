@@ -343,25 +343,21 @@ function loop(ts) {
 
   ctx.clearRect(0,0,S,S);
 
-  // Ocean
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(S/2,S/2,S/2,0,Math.PI*2);
+  ctx.clip();
+
   const og=ctx.createRadialGradient(S*.38,S*.35,0,S*.5,S*.5,S*.7);
   og.addColorStop(0,'#1e5278');og.addColorStop(.3,'#0e3050');
   og.addColorStop(.65,'#071828');og.addColorStop(1,'#030e18');
   ctx.fillStyle=og;ctx.fillRect(0,0,S,S);
 
-  // Continents — composite from isolated offscreen canvas
-  if (mapReady) {
-    ctx.drawImage(offscreen, 0, 0);
-  }
+  if (mapReady) { ctx.drawImage(offscreen, 0, 0); }
 
-  // Face — drawn once on top
   drawFace(lidProgress);
 
-  // Circle mask
-  ctx.globalCompositeOperation='destination-in';
-  ctx.beginPath();ctx.arc(S/2,S/2,S/2,0,Math.PI*2);
-  ctx.fillStyle='#fff';ctx.fill();
-  ctx.globalCompositeOperation='source-over';
+  ctx.restore();
 
   requestAnimationFrame(loop);
 }
