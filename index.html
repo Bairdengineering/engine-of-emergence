@@ -182,21 +182,32 @@ function draw(){
 
 
 
-function drawEye(cx, cy) {
-  const rx = 73, ry = 39;
+function eyePath(cx, cy, rx, ry) {
+  // Pointed almond — tapers to corners, bows in middle
+  ctx.moveTo(cx - rx, cy);
+  ctx.quadraticCurveTo(cx - rx*0.5, cy - ry*1.1, cx, cy - ry);
+  ctx.quadraticCurveTo(cx + rx*0.5, cy - ry*1.1, cx + rx, cy);
+  ctx.quadraticCurveTo(cx + rx*0.5, cy + ry*1.1, cx, cy + ry);
+  ctx.quadraticCurveTo(cx - rx*0.5, cy + ry*1.1, cx - rx, cy);
+  ctx.closePath();
+}
 
-  // Clip everything to ellipse — nothing bleeds outside
+function drawEye(cx, cy) {
+  const rx = 73, ry = 36;
+
+  // 1. Sclera — fill the eye shape white
+  ctx.beginPath();
+  eyePath(cx, cy, rx, ry);
+  ctx.fillStyle = 'rgba(232,245,255,0.97)';
+  ctx.fill();
+
+  // 2. Iris + pupil — clipped to eye shape
   ctx.save();
   ctx.beginPath();
-  ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI*2);
+  eyePath(cx, cy, rx, ry);
   ctx.clip();
 
-  // Sclera
-  ctx.fillStyle = 'rgba(232,245,255,0.97)';
-  ctx.fillRect(cx-rx, cy-ry, rx*2, ry*2);
-
-  // Iris
-  const ir = ry * 0.88;
+  const ir = ry * 0.92;
   ctx.beginPath();
   ctx.arc(cx, cy, ir, 0, Math.PI*2);
   const ig = ctx.createRadialGradient(cx-ir*.3, cy-ir*.3, 0, cx, cy, ir);
@@ -206,13 +217,11 @@ function drawEye(cx, cy) {
   ctx.fillStyle = ig;
   ctx.fill();
 
-  // Pupil
   ctx.beginPath();
   ctx.arc(cx, cy, ir*0.45, 0, Math.PI*2);
   ctx.fillStyle = 'rgba(2,6,12,0.97)';
   ctx.fill();
 
-  // Highlight
   ctx.beginPath();
   ctx.arc(cx-ir*.28, cy-ir*.25, ir*.18, 0, Math.PI*2);
   ctx.fillStyle = 'rgba(255,255,255,0.92)';
@@ -220,7 +229,7 @@ function drawEye(cx, cy) {
 
   ctx.restore();
 
-  // Lids drawn OUTSIDE clip — crescent shapes on top of eye
+  // 3. Lids — rects clipped to eye shape, tapers naturally at corners
   const leftEye = cx < 250;
   const hg = leftEye
     ? ctx.createLinearGradient(cx-rx, cy, cx+rx, cy)
@@ -230,21 +239,49 @@ function drawEye(cx, cy) {
   hg.addColorStop(0.65, 'rgba(90, 140, 60, 1.0)');
   hg.addColorStop(1.0,  'rgba(185, 135, 50, 1.0)');
 
-  // Upper lid — full ellipse width, inner edge lower (thinner lid)
+  ctx.save();
   ctx.beginPath();
-  ctx.ellipse(cx, cy, rx, ry, 0, Math.PI, 0, true);         // top half outer, full width
-  ctx.ellipse(cx, cy+ry*0.28, rx, ry*0.72, 0, 0, Math.PI, false); // inner edge shifted down
-  ctx.closePath();
-  ctx.fillStyle = hg;
-  ctx.fill();
+  eyePath(cx, cy, rx, ry);
+  ctx.clip();
 
-  // Lower lid — full ellipse width, inner edge higher (thinner lid)
-  ctx.beginPath();
-  ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI, false);        // bottom half outer, full width
-  ctx.ellipse(cx, cy+ry*0.18, rx, ry*0.68, 0, Math.PI, 0, true); // inner edge, same width
-  ctx.closePath();
+  // Upper lid rect — clips to pointed shape so corners taper naturally
   ctx.fillStyle = hg;
-  ctx.fill();
+  ctx.fillRect(cx-rx, cy-ry, rx*2, ry*0.55);
+
+  // Lower lid rect
+  ctx.fillRect(cx-rx, cy+ry*0.55, rx*2, ry*0.55);
+
+  ctx.restore();
+
+  // 4. Lashes — black, along upper lid edge
+  const lidY = cy - ry + ry*0.55;
+  ctx.strokeStyle = 'rgba(0,0,0,0.88)';
+  ctx.lineCap = 'round';
+  for (let i = 0; i < 8; i++) {
+    const t = i / 7;
+    const lx = cx - rx*0.85 + t * rx*1.7;
+    const angle = (-105 + t*50) * Math.PI/180;
+    const len = ry * 0.7;
+    ctx.beginPath();
+    ctx.moveTo(lx, lidY);
+    ctx.quadraticCurveTo(
+      lx + Math.cos(angle)*len*0.5,
+      lidY + Math.sin(angle)*len*0.5 - ry*0.15,
+      lx + Math.cos(angle)*len,
+      lidY + Math.sin(angle)*len
+    );
+    ctx.lineWidth = 2.8 - t*0.5;
+    ctx.stroke();
+  }
+
+  // 5. Brow
+  ctx.beginPath();
+  ctx.moveTo(cx-rx*1.05, cy-ry*1.9);
+  ctx.quadraticCurveTo(cx, cy-ry*2.3, cx+rx*1.05, cy-ry*1.9);
+  ctx.strokeStyle = 'rgba(5,12,10,0.35)';
+  ctx.lineWidth = 10;
+  ctx.lineCap = 'round';
+  ctx.stroke();
 }
 
 draw();
