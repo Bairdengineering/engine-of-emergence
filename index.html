@@ -118,6 +118,9 @@ const ctx=cvs.getContext('2d');
 
 // BLINK STATE
 let blink=0; // 0=fully open, 1=fully closed
+
+// SIGH STATE
+let sigh=0; // 0=resting, 1=fully open
 function triggerBlink(){
   let t=0;
   const iv=setInterval(()=>{
@@ -130,6 +133,19 @@ function triggerBlink(){
 }
 function scheduleBlink(){setTimeout(()=>{triggerBlink();scheduleBlink();},3000+Math.random()*4000);}
 scheduleBlink();
+
+function triggerSigh(){
+  let t=0;
+  const iv=setInterval(()=>{
+    t+=16;
+    if(t<600) sigh=t/600;           // slow open
+    else if(t<1200) sigh=1;          // hold open
+    else if(t<2000) sigh=1-(t-1200)/800; // slow close
+    else{sigh=0;clearInterval(iv);}
+  },16);
+}
+function scheduleSigh(){setTimeout(()=>{triggerSigh();scheduleSigh();},8000+Math.random()*8000);}
+setTimeout(scheduleSigh, 4000); // first sigh after 4s
 
 // WORLD MAP — pre-render to offscreen canvas
 const off=document.createElement('canvas');
@@ -319,10 +335,11 @@ function drawMouth(cx, cy) {
   ctx.fillStyle = 'rgba(2,8,14,0.18)';
   ctx.fill();
 
-  // Dark gap — the opening
+  // Dark gap — opens wider with sigh
+  const gapOpen = h * (0.7 + 1.8 * sigh);
   ctx.beginPath();
   ctx.moveTo(cx - w*0.68, cy);
-  ctx.quadraticCurveTo(cx, cy + h*0.7, cx + w*0.68, cy);
+  ctx.quadraticCurveTo(cx, cy + gapOpen, cx + w*0.68, cy);
   ctx.quadraticCurveTo(cx, cy - h*0.25, cx - w*0.68, cy);
   ctx.closePath();
   ctx.fillStyle = 'rgba(2,5,8,0.88)';
@@ -341,7 +358,7 @@ function drawMouth(cx, cy) {
   // Lower lip
   ctx.beginPath();
   ctx.moveTo(cx - w*0.68, cy);
-  ctx.quadraticCurveTo(cx, cy + h*1.6, cx + w*0.68, cy);
+  ctx.quadraticCurveTo(cx, cy + h*(1.6 + 1.8*sigh), cx + w*0.68, cy);
   ctx.strokeStyle = 'rgba(20,45,25,0.55)';
   ctx.lineWidth = 3.5;
   ctx.stroke();
