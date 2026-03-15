@@ -117,18 +117,18 @@ const S=500; cvs.width=S; cvs.height=S;
 const ctx=cvs.getContext('2d');
 
 // BLINK STATE
-let blink=0;
+let blink=0; // 0=fully open, 1=fully closed
 function triggerBlink(){
   let t=0;
   const iv=setInterval(()=>{
     t+=16;
-    if(t<200) blink=t/200;
-    else if(t<300) blink=1;
-    else if(t<500) blink=1-(t-300)/200;
+    if(t<150) blink=t/150;
+    else if(t<250) blink=1;
+    else if(t<450) blink=1-(t-250)/200;
     else{blink=0;clearInterval(iv);}
   },16);
 }
-function scheduleBlink(){setTimeout(()=>{triggerBlink();scheduleBlink();},3000+Math.random()*5000);}
+function scheduleBlink(){setTimeout(()=>{triggerBlink();scheduleBlink();},3000+Math.random()*4000);}
 scheduleBlink();
 
 // WORLD MAP — pre-render to offscreen canvas
@@ -246,8 +246,9 @@ function drawEye(cx, cy) {
   ctx.quadraticCurveTo(cx - rx*0.5, cy - ry*1.1, cx, cy - ry);
   ctx.quadraticCurveTo(cx + rx*0.5, cy - ry*1.1, cx + rx, cy);
   // Inner top — right corner to left corner via smaller top curve
-  ctx.quadraticCurveTo(cx + rx*0.5, cy - ry*0.45, cx, cy - ry*0.38);
-  ctx.quadraticCurveTo(cx - rx*0.5, cy - ry*0.45, cx - rx, cy);
+  const uInner = ry * (0.38 + 0.62 * blink);
+  ctx.quadraticCurveTo(cx + rx*0.5, cy - ry*(0.45 - 0.45*blink), cx, cy - ry + uInner);
+  ctx.quadraticCurveTo(cx - rx*0.5, cy - ry*(0.45 - 0.45*blink), cx - rx, cy);
   ctx.closePath();
   ctx.fillStyle = hg;
   ctx.fill();
@@ -259,8 +260,9 @@ function drawEye(cx, cy) {
   ctx.quadraticCurveTo(cx - rx*0.5, cy + ry*1.1, cx, cy + ry);
   ctx.quadraticCurveTo(cx + rx*0.5, cy + ry*1.1, cx + rx, cy);
   // Inner bottom — right corner to left corner via smaller bottom curve
-  ctx.quadraticCurveTo(cx + rx*0.5, cy + ry*0.35, cx, cy + ry*0.28);
-  ctx.quadraticCurveTo(cx - rx*0.5, cy + ry*0.35, cx - rx, cy);
+  const lInner = ry * (0.38 + 0.62 * blink);
+  ctx.quadraticCurveTo(cx + rx*0.5, cy + ry*(0.45 - 0.45*blink), cx, cy + ry - lInner);
+  ctx.quadraticCurveTo(cx - rx*0.5, cy + ry*(0.45 - 0.45*blink), cx - rx, cy);
   ctx.closePath();
   ctx.fillStyle = hg;
   ctx.fill();
@@ -286,14 +288,7 @@ function drawEye(cx, cy) {
     ctx.stroke();
   }
 
-  // 5. Brow
-  ctx.beginPath();
-  ctx.moveTo(cx-rx*1.05, cy-ry*1.9);
-  ctx.quadraticCurveTo(cx, cy-ry*2.3, cx+rx*1.05, cy-ry*1.9);
-  ctx.strokeStyle = 'rgba(5,12,10,0.35)';
-  ctx.lineWidth = 10;
-  ctx.lineCap = 'round';
-  ctx.stroke();
+
 }
 
 draw();
