@@ -193,7 +193,8 @@ function drawEye(cx,cy){
   ctx.save();
   ctx.beginPath();almond(cx,cy,rx,ry);ctx.clip();
 
-  // Sclera
+  // Sclera — explicitly fill the almond shape
+  ctx.beginPath();almond(cx,cy,rx,ry);
   ctx.fillStyle='rgba(225,242,255,.95)';ctx.fill();
 
   // Iris
