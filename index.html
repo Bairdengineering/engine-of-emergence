@@ -55,6 +55,8 @@
 
     /* ── CHARACTER SELECTION SCREEN ── */
     .char-screen{position:fixed;inset:0;z-index:11;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(2,4,8,.97);opacity:0;pointer-events:none;transition:opacity .7s;overflow:hidden}
+    .char-bg{position:absolute;inset:0;z-index:0;pointer-events:none}
+    .char-content{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center}
     .char-screen.on{opacity:1;pointer-events:all}
     .char-title{font-family:'Cinzel',serif;font-size:clamp(11px,1.8vw,16px);letter-spacing:.3em;color:rgba(255,255,255,.45);text-transform:uppercase;margin-bottom:32px}
     /* Name input */
@@ -117,6 +119,8 @@
 
 <!-- CHARACTER SELECTION SCREEN -->
 <div class="char-screen" id="charScreen">
+  <canvas class="char-bg" id="charBg"></canvas>
+  <div class="char-content">
   <div class="char-title">Choose Your Avatar</div>
   <div class="name-wrap">
     <div class="name-prompt">What shall we call you?</div>
@@ -124,6 +128,7 @@
   </div>
   <div class="cards-area" id="cardsArea"></div>
   <button class="continue-btn" id="continueBtn">Begin the Journey</button>
+  </div>
 </div>
 
 <div class="eq">χs &gt; λ</div>
@@ -258,6 +263,138 @@ function drawMouth(cx,cy){
 }
 
 draw();
+
+// ── BACKGROUND COLLAGE ────────────────────────────────
+function drawCollage() {
+  const bg = document.getElementById('charBg');
+  bg.width = window.innerWidth;
+  bg.height = window.innerHeight;
+  const c = bg.getContext('2d');
+  const W = bg.width, H = bg.height;
+
+  // Each domain gets a region of the screen to scatter symbols into
+  const regions = [
+    { x:0,    y:0,    w:W*.33, h:H*.5,  color:'rgba(255,90,20,',  symbols:['flame','flame','wave','wave'] },
+    { x:W*.33,y:0,    w:W*.33, h:H*.5,  color:'rgba(0,220,100,',  symbols:['cell','cell','spiral','spore'] },
+    { x:W*.66,y:0,    w:W*.34, h:H*.5,  color:'rgba(100,200,40,',  symbols:['leaf','bird','leaf','bird'] },
+    { x:0,    y:H*.5, w:W*.33, h:H*.5,  color:'rgba(200,160,40,',  symbols:['arch','pyramid','arch','column'] },
+    { x:W*.33,y:H*.5, w:W*.33, h:H*.5,  color:'rgba(60,140,200,',  symbols:['gear','building','gear','pipe'] },
+    { x:W*.66,y:H*.5, w:W*.34, h:H*.5,  color:'rgba(0,200,255,',   symbols:['circuit','dot','circuit','node'] },
+  ];
+
+  regions.forEach(r => {
+    for(let i=0;i<6;i++){
+      const sx = r.x + Math.random()*r.w;
+      const sy = r.y + Math.random()*r.h;
+      const sz = 18 + Math.random()*55;
+      const alpha = 0.04 + Math.random()*0.07;
+      const sym = r.symbols[Math.floor(Math.random()*r.symbols.length)];
+      c.save();
+      c.translate(sx,sy);
+      c.rotate((Math.random()-.5)*0.6);
+      c.globalAlpha = alpha;
+      c.strokeStyle = r.color + '1)';
+      c.fillStyle = r.color + '1)';
+      c.lineWidth = 1.5;
+      c.lineCap = 'round';
+      drawCollageSym(c, sym, sz);
+      c.restore();
+    }
+  });
+
+  // Soft vignette over everything
+  const vig = c.createRadialGradient(W/2,H/2,H*.2,W/2,H/2,H*.85);
+  vig.addColorStop(0,'rgba(2,4,8,0)');
+  vig.addColorStop(1,'rgba(2,4,8,0.75)');
+  c.globalAlpha=1;
+  c.fillStyle=vig; c.fillRect(0,0,W,H);
+
+  // Subtle dividing lines between domain regions
+  c.globalAlpha=0.06; c.strokeStyle='rgba(255,255,255,1)'; c.lineWidth=1;
+  c.setLineDash([4,8]);
+  c.beginPath(); c.moveTo(W*.33,0); c.lineTo(W*.33,H); c.stroke();
+  c.beginPath(); c.moveTo(W*.66,0); c.lineTo(W*.66,H); c.stroke();
+  c.beginPath(); c.moveTo(0,H*.5); c.lineTo(W,H*.5); c.stroke();
+  c.setLineDash([]);
+}
+
+function drawCollageSym(c, sym, s) {
+  if (sym === 'flame') {
+    c.beginPath();
+    c.moveTo(0,s*.5); c.bezierCurveTo(-s*.5,s*.1,-s*.3,-s*.3,0,-s*.5);
+    c.bezierCurveTo(s*.3,-s*.1,s*.5,s*.2,0,s*.5); c.fill();
+  } else if (sym === 'wave') {
+    c.beginPath(); c.moveTo(-s*.5,0);
+    c.bezierCurveTo(-s*.25,-s*.3,s*.25,s*.3,s*.5,0); c.stroke();
+  } else if (sym === 'cell') {
+    c.beginPath(); c.arc(0,0,s*.4,0,Math.PI*2); c.stroke();
+    c.beginPath(); c.arc(0,0,s*.15,0,Math.PI*2); c.fill();
+  } else if (sym === 'spiral') {
+    c.beginPath();
+    for(let a=0;a<Math.PI*4;a+=0.1){
+      const r=s*.04*a; const x=Math.cos(a)*r; const y=Math.sin(a)*r;
+      a<0.1?c.moveTo(x,y):c.lineTo(x,y);
+    } c.stroke();
+  } else if (sym === 'spore') {
+    c.beginPath(); c.arc(0,0,s*.2,0,Math.PI*2); c.fill();
+    for(let i=0;i<6;i++){
+      const a=i*Math.PI/3;
+      c.beginPath(); c.moveTo(Math.cos(a)*s*.2,Math.sin(a)*s*.2);
+      c.lineTo(Math.cos(a)*s*.45,Math.sin(a)*s*.45); c.stroke();
+    }
+  } else if (sym === 'leaf') {
+    c.beginPath(); c.moveTo(0,-s*.5);
+    c.bezierCurveTo(s*.35,-s*.2,s*.35,s*.2,0,s*.5);
+    c.bezierCurveTo(-s*.35,s*.2,-s*.35,-s*.2,0,-s*.5); c.fill();
+  } else if (sym === 'bird') {
+    c.beginPath(); c.moveTo(-s*.4,0);
+    c.quadraticCurveTo(-s*.1,-s*.3,0,-s*.1);
+    c.quadraticCurveTo(s*.1,-s*.3,s*.4,0); c.stroke();
+  } else if (sym === 'arch') {
+    c.beginPath(); c.moveTo(-s*.4,s*.4); c.lineTo(-s*.4,-s*.1);
+    c.arc(0,-s*.1,s*.4,Math.PI,0); c.lineTo(s*.4,s*.4); c.stroke();
+  } else if (sym === 'pyramid') {
+    c.beginPath(); c.moveTo(0,-s*.5); c.lineTo(s*.45,s*.4); c.lineTo(-s*.45,s*.4); c.closePath(); c.stroke();
+  } else if (sym === 'column') {
+    c.strokeRect(-s*.15,-s*.45,s*.3,s*.9);
+    c.fillRect(-s*.2,-s*.45,s*.4,s*.08);
+    c.fillRect(-s*.2,s*.38,s*.4,s*.08);
+  } else if (sym === 'gear') {
+    c.beginPath(); c.arc(0,0,s*.3,0,Math.PI*2); c.stroke();
+    c.beginPath(); c.arc(0,0,s*.12,0,Math.PI*2); c.fill();
+    for(let i=0;i<6;i++){
+      const a=i*Math.PI/3;
+      c.save(); c.rotate(a);
+      c.fillRect(-s*.06,s*.25,s*.12,s*.18); c.restore();
+    }
+  } else if (sym === 'building') {
+    c.strokeRect(-s*.3,-s*.4,s*.6,s*.8);
+    for(let row=0;row<3;row++) for(let col=0;col<2;col++){
+      c.fillRect(-s*.2+col*s*.25,-s*.25+row*s*.25,s*.12,s*.15);
+    }
+  } else if (sym === 'circuit') {
+    c.beginPath(); c.moveTo(-s*.5,0); c.lineTo(-s*.2,0);
+    c.lineTo(-s*.2,-s*.3); c.lineTo(s*.2,-s*.3);
+    c.lineTo(s*.2,0); c.lineTo(s*.5,0); c.stroke();
+    c.beginPath(); c.arc(0,0,s*.12,0,Math.PI*2); c.stroke();
+  } else if (sym === 'dot') {
+    c.beginPath(); c.arc(0,0,s*.12,0,Math.PI*2); c.fill();
+  } else if (sym === 'node') {
+    c.beginPath(); c.arc(0,0,s*.18,0,Math.PI*2); c.stroke();
+    for(let i=0;i<4;i++){
+      const a=i*Math.PI/2;
+      c.beginPath(); c.moveTo(Math.cos(a)*s*.18,Math.sin(a)*s*.18);
+      c.lineTo(Math.cos(a)*s*.45,Math.sin(a)*s*.45); c.stroke();
+    }
+  } else if (sym === 'pipe') {
+    c.beginPath(); c.moveTo(-s*.5,s*.15); c.lineTo(s*.5,s*.15);
+    c.moveTo(-s*.5,-s*.15); c.lineTo(s*.5,-s*.15); c.stroke();
+  }
+}
+
+// Draw collage once on load
+window.addEventListener('load', drawCollage);
+window.addEventListener('resize', drawCollage);
 
 // ── AVATAR CARDS ───────────────────────────────────────
 const DOMAINS = [
