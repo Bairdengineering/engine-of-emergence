@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Engine of Emergence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Cinzel:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+```
+:root {
+  --deep-space: #020408;
+  --void: #050d14;
+  --ocean-deep: #0a1628;
+  --atmosphere: #1a3a5c;
+  --aurora-1: #1a6b4a;
+  --aurora-2: #2e7d8e;
+  --aurora-3: #4a8fa0;
+  --life-green: #2d8a4e;
+  --desert-gold: #c4933f;
+  --cloud-white: rgba(255,255,255,0.85);
+  --text-primary: rgba(255,255,255,0.92);
+  --text-dim: rgba(255,255,255,0.45);
+}
+
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  background: var(--deep-space);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  color: var(--text-primary);
+}
+
+/* STAR FIELD */
+.starfield {
+  position: fixed; inset: 0; z-index: 0;
+  overflow: hidden;
+}
+.star {
+  position: absolute;
+  border-radius: 50%;
+  background: white;
+  animation: twinkle var(--dur) ease-in-out infinite;
+  animation-delay: var(--delay);
+}
+@keyframes twinkle {
+  0%, 100% { opacity: var(--min-op); transform: scale(1); }
+  50% { opacity: var(--max-op); transform: scale(1.4); }
+}
+
+/* MAIN CONTAINER */
+.scene {
+  position: fixed; inset: 0; z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* PLANET */
+.planet-wrapper {
+  position: relative;
+  width: min(82vw, 82vh);
+  height: min(82vw, 82vh);
+  animation: floatIn 2.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0;
+}
+@keyframes floatIn {
+  from { opacity: 0; transform: scale(0.88) translateY(20px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* OUTER GLOW */
+.planet-glow {
+  position: absolute;
+  inset: -18%;
+  border-radius: 50%;
+  background: radial-gradient(circle,
+    rgba(26, 107, 74, 0.18) 0%,
+    rgba(46, 125, 142, 0.12) 35%,
+    rgba(26, 58, 92, 0.06) 60%,
+    transparent 75%
+  );
+  animation: breathe 6s ease-in-out infinite;
+}
+@keyframes breathe {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.06); opacity: 1; }
+}
+
+/* ATMOSPHERE RING */
+.atmosphere-ring {
+  position: absolute;
+  inset: -4%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%,
+    transparent 46%,
+    rgba(74, 143, 160, 0.22) 50%,
+    rgba(26, 107, 74, 0.15) 55%,
+    rgba(46, 125, 142, 0.08) 62%,
+    transparent 68%
+  );
+  animation: atmosphereRotate 40s linear infinite;
+}
+@keyframes atmosphereRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* PLANET SPHERE */
+.planet {
+  position: relative;
+  width: 100%; height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow:
+    inset -18% -12% 0 rgba(2, 4, 8, 0.85),
+    inset 8% 8% 0 rgba(255,255,255,0.04),
+    0 0 60px rgba(26, 107, 74, 0.2),
+    0 0 120px rgba(46, 125, 142, 0.1);
+}
+
+/* BASE OCEAN */
+.layer-ocean {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 38% 35%,
+    #1a4a6e 0%,
+    #0d2d4a 30%,
+    #071828 60%,
+    #030e18 100%
+  );
+}
+
+/* CONTINENTS */
+.layer-continents {
+  position: absolute; inset: 0;
+  background-image:
+    /* North America-ish */
+    radial-gradient(ellipse 18% 22% at 28% 32%, rgba(45, 138, 78, 0.75) 0%, rgba(45, 138, 78, 0.4) 50%, transparent 80%),
+    radial-gradient(ellipse 12% 8% at 24% 44%, rgba(45, 138, 78, 0.6) 0%, transparent 70%),
+    /* Europe/Africa */
+    radial-gradient(ellipse 10% 28% at 52% 38%, rgba(196, 147, 63, 0.65) 0%, rgba(45, 138, 78, 0.45) 40%, transparent 75%),
+    radial-gradient(ellipse 9% 14% at 54% 58%, rgba(196, 147, 63, 0.55) 0%, transparent 70%),
+    /* Asia */
+    radial-gradient(ellipse 22% 18% at 70% 30%, rgba(45, 138, 78, 0.7) 0%, rgba(196, 147, 63, 0.3) 50%, transparent 80%),
+    /* South America */
+    radial-gradient(ellipse 8% 16% at 35% 62%, rgba(45, 138, 78, 0.6) 0%, transparent 70%),
+    /* Australia */
+    radial-gradient(ellipse 8% 6% at 74% 60%, rgba(196, 147, 63, 0.65) 0%, transparent 65%),
+    /* Antarctica */
+    radial-gradient(ellipse 30% 8% at 50% 92%, rgba(220, 235, 245, 0.4) 0%, transparent 70%);
+  animation: continentDrift 120s linear infinite;
+}
+@keyframes continentDrift {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* CLOUD LAYER */
+.layer-clouds {
+  position: absolute; inset: 0;
+  background-image:
+    radial-gradient(ellipse 35% 8% at 60% 22%, rgba(255,255,255,0.18) 0%, transparent 70%),
+    radial-gradient(ellipse 28% 6% at 25% 48%, rgba(255,255,255,0.14) 0%, transparent 70%),
+    radial-gradient(ellipse 22% 5% at 75% 55%, rgba(255,255,255,0.12) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 7% at 45% 72%, rgba(255,255,255,0.1) 0%, transparent 70%),
+    radial-gradient(ellipse 18% 4% at 15% 30%, rgba(255,255,255,0.13) 0%, transparent 70%);
+  animation: cloudDrift 55s linear infinite reverse;
+}
+@keyframes cloudDrift {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* LIFE PULSE — bioluminescent shimmer */
+.layer-life {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 42% 38%,
+    rgba(46, 160, 100, 0.08) 0%,
+    transparent 55%
+  );
+  animation: lifePulse 4s ease-in-out infinite;
+}
+@keyframes lifePulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* TERMINATOR — shadow side */
+.layer-shadow {
+  position: absolute; inset: 0;
+  background: radial-gradient(circle at 80% 55%,
+    transparent 30%,
+    rgba(2, 4, 8, 0.35) 55%,
+    rgba(2, 4, 8, 0.75) 72%,
+    rgba(2, 4, 8, 0.95) 85%
+  );
+}
+
+/* SPECULAR HIGHLIGHT */
+.layer-specular {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 30% 22% at 28% 26%,
+    rgba(255,255,255,0.07) 0%,
+    transparent 70%
+  );
+}
+
+/* PULSE RING */
+.pulse-ring {
+  position: absolute;
+  inset: -2%;
+  border-radius: 50%;
+  border: 1px solid rgba(46, 125, 142, 0.0);
+  animation: pulseRing 4s ease-out infinite;
+}
+.pulse-ring:nth-child(2) { animation-delay: 1.33s; }
+.pulse-ring:nth-child(3) { animation-delay: 2.66s; }
+@keyframes pulseRing {
+  0% { transform: scale(1); border-color: rgba(46, 125, 142, 0.5); opacity: 1; }
+  100% { transform: scale(1.25); border-color: rgba(46, 125, 142, 0); opacity: 0; }
+}
+
+/* TITLE */
+.title-block {
+  position: absolute;
+  top: 4vh;
+  left: 0; right: 0;
+  text-align: center;
+  animation: fadeInDown 1.8s cubic-bezier(0.16, 1, 0.3, 1) 0.6s forwards;
+  opacity: 0;
+}
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.title-eyebrow {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(9px, 1.8vw, 13px);
+  letter-spacing: 0.35em;
+  color: rgba(46, 125, 142, 0.7);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.title-main {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(22px, 4.5vw, 52px);
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  color: var(--text-primary);
+  text-shadow: 0 0 40px rgba(46, 125, 142, 0.4);
+  line-height: 1.1;
+}
+
+/* CTA PATHS */
+.paths {
+  position: absolute;
+  bottom: 5vh;
+  left: 0; right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  animation: fadeInUp 1.8s cubic-bezier(0.16, 1, 0.3, 1) 3.2s forwards;
+  opacity: 0;
+}
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.path-hint {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(11px, 1.6vw, 14px);
+  font-style: italic;
+  color: var(--text-dim);
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+.path-buttons {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 0 20px;
+}
+.path-btn {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(10px, 1.5vw, 13px);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 13px 28px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.35s ease;
+  position: relative;
+  overflow: hidden;
+}
+.path-btn::before {
+  content: '';
+  position: absolute; inset: 0;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+.path-btn:hover::before { opacity: 1; }
+
+.path-btn-primary {
+  background: transparent;
+  border: 1px solid rgba(46, 125, 142, 0.6);
+  color: rgba(74, 143, 160, 0.9);
+}
+.path-btn-primary::before {
+  background: rgba(46, 125, 142, 0.12);
+}
+.path-btn-primary:hover {
+  border-color: rgba(46, 125, 142, 0.9);
+  color: white;
+  box-shadow: 0 0 20px rgba(46, 125, 142, 0.2), inset 0 0 20px rgba(46, 125, 142, 0.05);
+}
+
+.path-btn-secondary {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.45);
+}
+.path-btn-secondary::before {
+  background: rgba(255,255,255,0.04);
+}
+.path-btn-secondary:hover {
+  border-color: rgba(255,255,255,0.35);
+  color: rgba(255,255,255,0.75);
+}
+
+/* EQUATION CORNER */
+.equation {
+  position: fixed;
+  bottom: 20px;
+  right: 24px;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(11px, 1.4vw, 14px);
+  font-style: italic;
+  color: rgba(46, 125, 142, 0.35);
+  letter-spacing: 0.04em;
+  animation: fadeInUp 2s ease 4.5s forwards;
+  opacity: 0;
+  user-select: none;
+  transition: color 0.4s ease;
+}
+.equation:hover {
+  color: rgba(46, 125, 142, 0.7);
+}
+
+/* PLANET HOVER STATE */
+.planet-wrapper:hover .planet-glow {
+  animation-duration: 3s;
+}
+.planet-wrapper:hover .layer-life {
+  animation-duration: 2s;
+}
+
+/* RESPONSIVE */
+@media (max-width: 480px) {
+  .path-buttons { flex-direction: column; align-items: center; }
+  .path-btn { width: 260px; text-align: center; }
+}
+```
+
+  </style>
+</head>
+<body>
+
+<div class="starfield" id="starfield"></div>
+
+<div class="scene">
+  <div class="title-block">
+    <div class="title-eyebrow">A Framework for Everything</div>
+    <div class="title-main">Engine of Emergence</div>
+  </div>
+
+  <div class="planet-wrapper">
+    <div class="planet-glow"></div>
+    <div class="atmosphere-ring"></div>
+    <div class="pulse-ring"></div>
+    <div class="pulse-ring"></div>
+    <div class="pulse-ring"></div>
+    <div class="planet">
+      <div class="layer-ocean"></div>
+      <div class="layer-continents"></div>
+      <div class="layer-clouds"></div>
+      <div class="layer-life"></div>
+      <div class="layer-shadow"></div>
+      <div class="layer-specular"></div>
+    </div>
+  </div>
+
+  <div class="paths">
+    <div class="path-hint">Where would you like to begin?</div>
+    <div class="path-buttons">
+      <button class="path-btn path-btn-primary">Take Me on the Journey</button>
+      <button class="path-btn path-btn-secondary">I Know Where I Want to Start</button>
+    </div>
+  </div>
+</div>
+
+<div class="equation">χs &gt; λ</div>
+
+<script>
+  // Generate starfield
+  const starfield = document.getElementById('starfield');
+  const starCount = 280;
+  for (let i = 0; i < starCount; i++) {
+    const star = document.createElement('div');
+    star.classList.add('star');
+    const size = Math.random() * 2.2 + 0.4;
+    const x = Math.random() * 100;
+    const y = Math.random() * 100;
+    const dur = (Math.random() * 5 + 3).toFixed(1);
+    const delay = (Math.random() * 8).toFixed(1);
+    const minOp = (Math.random() * 0.2 + 0.05).toFixed(2);
+    const maxOp = (Math.random() * 0.5 + 0.4).toFixed(2);
+    star.style.cssText = `
+      width: ${size}px; height: ${size}px;
+      left: ${x}%; top: ${y}%;
+      --dur: ${dur}s; --delay: ${delay}s;
+      --min-op: ${minOp}; --max-op: ${maxOp};
+    `;
+    starfield.appendChild(star);
+  }
+
+  // Button interactions — placeholder for routing
+  document.querySelectorAll('.path-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const isJourney = btn.classList.contains('path-btn-primary');
+      // Fade out and transition — routing to be wired in next phase
+      document.querySelector('.scene').style.transition = 'opacity 0.8s ease';
+      document.querySelector('.scene').style.opacity = '0';
+      setTimeout(() => {
+        alert(isJourney
+          ? 'Journey mode — domain map coming next session'
+          : 'Explorer mode — domain map coming next session'
+        );
+        document.querySelector('.scene').style.opacity = '1';
+      }, 800);
+    });
+  });
+</script>
+
+</body>
+</html>
