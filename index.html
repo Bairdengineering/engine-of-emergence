@@ -222,27 +222,26 @@ function drawEye(cx, cy) {
 
   ctx.restore();
 
-  // Lids — gradient clipped to ellipse, blends with planet
+  // Lids — horizontal gradient matching planet colors left to right
   ctx.save();
   ctx.beginPath();
   ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI*2);
   ctx.clip();
 
-  // Upper lid — fades from dark at top edge to transparent toward iris
-  const ug = ctx.createLinearGradient(cx, cy-ry, cx, cy-ry*0.55);
-  ug.addColorStop(0, 'rgba(3,14,24,1.0)');
-  ug.addColorStop(0.6, 'rgba(5,18,30,0.92)');
-  ug.addColorStop(1, 'rgba(8,24,38,0.0)');
-  ctx.fillStyle = ug;
-  ctx.fillRect(cx-rx, cy-ry, rx*2, ry*0.55);
+  // Left eye only for now — horizontal gradient: ocean blue -> bright blue -> green -> tan
+  const hg = ctx.createLinearGradient(cx-rx, cy, cx+rx, cy);
+  hg.addColorStop(0,   'rgba(14, 52, 80, 1.0)');   // deep ocean blue
+  hg.addColorStop(0.3, 'rgba(30, 82, 120, 1.0)');  // brighter ocean blue
+  hg.addColorStop(0.6, 'rgba(60, 120, 70, 1.0)');  // earth green
+  hg.addColorStop(1.0, 'rgba(180, 130, 55, 1.0)'); // tan/desert where it crosses land
 
-  // Lower lid — fades from dark at bottom edge to transparent toward iris
-  const lg = ctx.createLinearGradient(cx, cy+ry, cx, cy+ry*0.62);
-  lg.addColorStop(0, 'rgba(3,14,24,1.0)');
-  lg.addColorStop(0.6, 'rgba(5,18,30,0.88)');
-  lg.addColorStop(1, 'rgba(8,24,38,0.0)');
-  ctx.fillStyle = lg;
-  ctx.fillRect(cx-rx, cy+ry*0.62, rx*2, ry*0.40);
+  // Upper lid
+  ctx.fillStyle = hg;
+  ctx.fillRect(cx-rx, cy-ry, rx*2, ry*0.42);
+
+  // Lower lid
+  ctx.fillStyle = hg;
+  ctx.fillRect(cx-rx, cy+ry*0.72, rx*2, ry*0.30);
 
   ctx.restore();
 }
