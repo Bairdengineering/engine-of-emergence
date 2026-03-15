@@ -238,15 +238,50 @@ function drawEye(cx, cy) {
   hg.addColorStop(0.55, 'rgba(90, 140, 60, 1.0)'); // rich green
   hg.addColorStop(1.0, 'rgba(185, 135, 50, 1.0)'); // tan dominant at far edge
 
-  // Upper lid
+  // Upper lid — curved crescent, deeper in middle, tapers at corners
   ctx.fillStyle = hg;
-  ctx.fillRect(cx-rx, cy-ry, rx*2, ry*0.42);
+  ctx.beginPath();
+  ctx.moveTo(cx-rx, cy);                                    // left corner of eye
+  ctx.bezierCurveTo(cx-rx, cy-ry*1.1, cx-rx*0.3, cy-ry, cx, cy-ry*0.85); // top of ellipse
+  ctx.bezierCurveTo(cx+rx*0.3, cy-ry, cx+rx, cy-ry*1.1, cx+rx, cy);       // right corner
+  ctx.lineTo(cx+rx*0.7, cy-ry*0.12);                       // right inner corner
+  ctx.quadraticCurveTo(cx, cy-ry*0.52, cx-rx*0.7, cy-ry*0.12); // inner lid curve
+  ctx.closePath();
+  ctx.fill();
 
-  // Lower lid
+  // Lower lid — curved crescent, deeper in middle, tapers at corners
   ctx.fillStyle = hg;
-  ctx.fillRect(cx-rx, cy+ry*0.72, rx*2, ry*0.30);
+  ctx.beginPath();
+  ctx.moveTo(cx-rx, cy);
+  ctx.bezierCurveTo(cx-rx, cy+ry*1.1, cx-rx*0.3, cy+ry, cx, cy+ry*0.85);
+  ctx.bezierCurveTo(cx+rx*0.3, cy+ry, cx+rx, cy+ry*1.1, cx+rx, cy);
+  ctx.lineTo(cx+rx*0.7, cy+ry*0.12);
+  ctx.quadraticCurveTo(cx, cy+ry*0.38, cx-rx*0.7, cy+ry*0.12);
+  ctx.closePath();
+  ctx.fill();
 
   ctx.restore();
+
+  // Lashes — black, rooted at upper lid edge, sweep upward
+  const lidY = cy - ry + ry * 0.42;
+  ctx.strokeStyle = 'rgba(0,0,0,0.85)';
+  ctx.lineCap = 'round';
+  for (let i = 0; i < 8; i++) {
+    const t = i / 7;
+    const lx = cx - rx * 0.88 + t * rx * 1.76;
+    const angle = (-105 + t * 50) * Math.PI / 180;
+    const len = ry * 0.65;
+    ctx.beginPath();
+    ctx.moveTo(lx, lidY);
+    ctx.quadraticCurveTo(
+      lx + Math.cos(angle) * len * 0.5,
+      lidY + Math.sin(angle) * len * 0.5 - ry * 0.12,
+      lx + Math.cos(angle) * len,
+      lidY + Math.sin(angle) * len
+    );
+    ctx.lineWidth = 2.5 - t * 0.5;
+    ctx.stroke();
+  }
 }
 
 draw();
