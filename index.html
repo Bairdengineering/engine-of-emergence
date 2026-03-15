@@ -233,7 +233,7 @@ function drawEye(cx, cy) {
   // Upper lid — full ellipse width, inner edge lower (thinner lid)
   ctx.beginPath();
   ctx.ellipse(cx, cy, rx, ry, 0, Math.PI, 0, true);         // top half outer, full width
-  ctx.ellipse(cx, cy-ry*0.22, rx, ry*0.78, 0, 0, Math.PI, false); // inner edge, same width
+  ctx.ellipse(cx, cy-ry*0.32, rx, ry*0.68, 0, 0, Math.PI, false); // inner edge, same width
   ctx.closePath();
   ctx.fillStyle = hg;
   ctx.fill();
