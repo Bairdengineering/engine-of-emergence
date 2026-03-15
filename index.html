@@ -222,14 +222,28 @@ function drawEye(cx, cy) {
 
   ctx.restore();
 
-  // Lids — solid rects clipped to ellipse, fully opaque
+  // Lids — gradient clipped to ellipse, blends with planet
   ctx.save();
   ctx.beginPath();
   ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI*2);
   ctx.clip();
-  ctx.fillStyle = '#030e18';
-  ctx.fillRect(cx-rx, cy-ry, rx*2, ry*0.42);      // upper lid
-  ctx.fillRect(cx-rx, cy+ry*0.72, rx*2, ry*0.30); // lower lid
+
+  // Upper lid — fades from dark at top edge to transparent toward iris
+  const ug = ctx.createLinearGradient(cx, cy-ry, cx, cy-ry*0.55);
+  ug.addColorStop(0, 'rgba(3,14,24,1.0)');
+  ug.addColorStop(0.6, 'rgba(5,18,30,0.92)');
+  ug.addColorStop(1, 'rgba(8,24,38,0.0)');
+  ctx.fillStyle = ug;
+  ctx.fillRect(cx-rx, cy-ry, rx*2, ry*0.55);
+
+  // Lower lid — fades from dark at bottom edge to transparent toward iris
+  const lg = ctx.createLinearGradient(cx, cy+ry, cx, cy+ry*0.62);
+  lg.addColorStop(0, 'rgba(3,14,24,1.0)');
+  lg.addColorStop(0.6, 'rgba(5,18,30,0.88)');
+  lg.addColorStop(1, 'rgba(8,24,38,0.0)');
+  ctx.fillStyle = lg;
+  ctx.fillRect(cx-rx, cy+ry*0.62, rx*2, ry*0.40);
+
   ctx.restore();
 }
 
