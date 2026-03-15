@@ -229,7 +229,7 @@ function drawEye(cx, cy) {
 
   ctx.restore();
 
-  // 3. Lids — rects clipped to eye shape, tapers naturally at corners
+  // 3. Lids — drawn as filled regions between two eye paths
   const leftEye = cx < 250;
   const hg = leftEye
     ? ctx.createLinearGradient(cx-rx, cy, cx+rx, cy)
@@ -239,19 +239,31 @@ function drawEye(cx, cy) {
   hg.addColorStop(0.65, 'rgba(90, 140, 60, 1.0)');
   hg.addColorStop(1.0,  'rgba(185, 135, 50, 1.0)');
 
-  ctx.save();
+  // Upper lid — region between outer eye top and inner eye top (shifted down)
   ctx.beginPath();
-  eyePath(cx, cy, rx, ry);
-  ctx.clip();
-
-  // Upper lid rect — clips to pointed shape so corners taper naturally
+  // Outer top — left corner to right corner via top
+  ctx.moveTo(cx - rx, cy);
+  ctx.quadraticCurveTo(cx - rx*0.5, cy - ry*1.1, cx, cy - ry);
+  ctx.quadraticCurveTo(cx + rx*0.5, cy - ry*1.1, cx + rx, cy);
+  // Inner top — right corner to left corner via smaller top curve
+  ctx.quadraticCurveTo(cx + rx*0.5, cy - ry*0.45, cx, cy - ry*0.38);
+  ctx.quadraticCurveTo(cx - rx*0.5, cy - ry*0.45, cx - rx, cy);
+  ctx.closePath();
   ctx.fillStyle = hg;
-  ctx.fillRect(cx-rx, cy-ry, rx*2, ry*0.55);
+  ctx.fill();
 
-  // Lower lid rect
-  ctx.fillRect(cx-rx, cy+ry*0.55, rx*2, ry*0.55);
-
-  ctx.restore();
+  // Lower lid — region between outer eye bottom and inner eye bottom (shifted up)
+  ctx.beginPath();
+  // Outer bottom — left corner to right corner via bottom
+  ctx.moveTo(cx - rx, cy);
+  ctx.quadraticCurveTo(cx - rx*0.5, cy + ry*1.1, cx, cy + ry);
+  ctx.quadraticCurveTo(cx + rx*0.5, cy + ry*1.1, cx + rx, cy);
+  // Inner bottom — right corner to left corner via smaller bottom curve
+  ctx.quadraticCurveTo(cx + rx*0.5, cy + ry*0.35, cx, cy + ry*0.28);
+  ctx.quadraticCurveTo(cx - rx*0.5, cy + ry*0.35, cx - rx, cy);
+  ctx.closePath();
+  ctx.fillStyle = hg;
+  ctx.fill();
 
   // 4. Lashes — black, along upper lid edge
   const lidY = cy - ry + ry*0.55;
