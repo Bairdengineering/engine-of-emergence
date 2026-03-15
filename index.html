@@ -296,6 +296,14 @@ function drawEye(cx, cy) {
 function drawMouth(cx, cy) {
   const w = 95, h = 16;
 
+  // Skin tone fill — lower face region, semi-transparent
+  ctx.beginPath();
+  ctx.ellipse(cx, cy + h*0.5, w*1.1, h*3.2, 0, 0, Math.PI*2);
+  ctx.fillStyle = 'rgba(160, 110, 75, 0.18)';
+  ctx.fill();
+  ctx.fillStyle = 'rgba(160, 110, 75, 0.12)';
+  ctx.fill();
+
   // Soft glow behind mouth — slight blur effect via layered fills
   ctx.beginPath();
   ctx.moveTo(cx - w*0.75, cy);
