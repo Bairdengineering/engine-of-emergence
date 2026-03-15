@@ -229,7 +229,7 @@ function drawEye(cx, cy) {
   ctx.lineTo(cx + rx, cy - lidDepth);
   ctx.ellipse(cx, cy - lidDepth, rx, ry * 0.4, 0, 0, Math.PI, true); // inner lid curve
   ctx.closePath();
-  ctx.fillStyle = 'rgba(8,28,38,0.82)';
+  ctx.fillStyle = 'rgba(8,28,38,0.22)';
   ctx.fill();
 
   // Lower lid — smaller crescent from bottom
@@ -239,7 +239,7 @@ function drawEye(cx, cy) {
   ctx.lineTo(cx - rx, cy + llidDepth);
   ctx.ellipse(cx, cy + llidDepth, rx, ry * 0.35, 0, Math.PI, 0, true);
   ctx.closePath();
-  ctx.fillStyle = 'rgba(8,28,38,0.68)';
+  ctx.fillStyle = 'rgba(8,28,38,0.18)';
   ctx.fill();
 }
 
